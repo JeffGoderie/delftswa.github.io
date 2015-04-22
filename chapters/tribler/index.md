@@ -1,7 +1,14 @@
-# Tribler
+---
+layout: default
+project: tribler
+title: Tribler
+chapter: true
+---
 
+#Tribler: Aiming for Anonymity
+**[Jeffrey Goderie](https://github.com/JeffGoderie), [Alex Simes](https://github.com/alex9311), [Brynjolfur Georggson](https://github.com/binnimar), [Peter van Buul](https://github.com/PetervB)**
 ####Abstract
-[Tribler](https://www.tribler.org/) is a BitTorrent client that allows for anonymity for both seeders and leechers. It provides users with the option to download or stream torrents without needing a browser to find the torrents.
+[Tribler](https://www.tribler.org/) is a BitTorrent client that aims at providing anonymity for both seeders and leechers. It provides users with the option to download or stream torrents without needing a browser to find the torrents.
 
 Being an academic software project, Tribler shows many design flaws that could be problematic to Tribler's maintainability. Due to the lack of documentation it is quite hard to get into the project.
 
@@ -29,16 +36,16 @@ In this analysis we tried providing a function overview of Tribler for future de
 
 
 #Introduction to Tribler
-Tribler is a BitTorrent client that allows for anonymity of both seeders and leechers. Tribler provides the same functionality as most BitTorrent clients, combined with the added functionality to directly stream torrents when desired. What goes on behind the scenes to make it anonymous is inspired by and adapted from the Tor Networking Protocol. Tribler's database is filled with torrents found on the computers of all Tribler users.
+Tribler is a BitTorrent client that aims for anonymity of both seeders and leechers. Tribler provides the same functionality as most BitTorrent clients, combined with the added functionality to directly stream torrents when desired. What goes on behind the scenes to make it anonymous is inspired by and adapted from the Tor Networking Protocol. Tribler's database is filled with torrents found on the computers of all Tribler users.
 
-Tribler also allows the users to use torrents found on the web. However, if the user wants to stay anonymous, they should obtain the torrent file through Tribler's internal database system: Dispersy. Dispersy keeps track of torrent files that can be found across different Tribler users or communities (groups of users with similar interests). Having an internal database voids the need for browsers, which helps achieve the goal of anonymity.
+Tribler also allows the users to use torrents found on the web. However, if the userun wants to stay anonymous, they should obtain the torrent file through Tribler's internal database system: Dispersy. Dispersy keeps track of torrent files that can be found across different Tribler users or communities (groups of users with similar interests). Having an internal database voids the need for browsers, which helps achieve the goal of anonymity.
 
 [Tribler](http://en.wikipedia.org/wiki/Tribler) is being developed at Delft University of Technology, and was initialized by Johan Pouwelse in 2001. The project gained worldwide interest after an article published in 2012 describing its decentralized structure and the fact that it was virtually impossible to clear the torrent index. Tribler became anonymous in 2014, though with security flaws as discovered by some of the Tor developers (Issues [#1066](https://github.com/Tribler/tribler/issues/1066) and [#1055](https://github.com/Tribler/tribler/issues/1055)).
 
 Tribler's mission is to: 
 > Push the boundaries of self-organizing systems, robust reputation systems and craft collaborative systems with millions of active participants under continuous attack from spammers and other adversarial entities.
 
-Academic software generally lacks the quality found in software developed at corporations. This usually proves to be fine, as academic software often serves as a prototype to show proof of concepts. However, Tribler is meant to be released and put to use, suggesting that a more maintainable and well-structured code base is desirable. Since Tribler is open source, unlike most academic software, having a more maintainable code base also has the benefit of allowing easier outside development. We decided to research the state of Tribler's code base and see what could be improved.
+Academic software generally lacks the quality found in software developed at corporations. This usually proves to be fine, as academic software often serves as a prototype to show proof of concepts. However, Tribler is meant to be released and put to use, suggesting that a more maintainable and well-structured code base is desirable. Also Tribler is open source, so having a more maintainable code base also makes it easier for outside developers to assist in the project. This is why we decided to research the state of Tribler's code base and see what could be improved to make it more maintainable.
 
 The results of this research will be provided below. Firstly, an overview of the most important stakeholders of the Tribler project will be given, followed by an overview of the relations between Tribler and its environments. Secondly, an overview of the structure of Tribler's code base will be provided. Thereafter, we will define and analyze metrics to determine to what extent Tribler is maintainable, and how maintainability can be improved, and lastly, we will run our findings by the project's architect.
 
@@ -60,7 +67,7 @@ While all types of stakeholders are of importance to Tribler, some are critical 
 ##Development-crucial stakeholders
 
 #####Acquirers
-Tribler has been in the hands of the TU Delft P2P group for the last nine years. The Tribler project leader is Johan Pouwelse, a professor at the TU Delft. The other project managers are Henk Sips and Dick Epema, both also professors at the TU Delft. These people can be considered acquirers of Tribler.
+Tribler has been in the hands of the TU Delft P2P group for the last nine years. The Tribler project leader is Johan Pouwelse, a professor at the TU Delft, who is also the main researcher of the Tribler project. The other project managers are Henk Sips and Dick Epema, both also professors at the TU Delft. These people can be considered acquirers of Tribler.
 
 Tribler has received several million Euro's funding from the European union. Also, the Dutch technology foundation STW was providing additional funding for Tribler until mid 2009. Therefore the European Union and STW are also acquirer stakeholders of Tribler.
 
@@ -70,6 +77,8 @@ Without these acquirers the project would not have been initialized or continued
 In Tribler, the assessors would be the individuals who always look over the pull requests before they are merged. [Elric Milon](https://github.com/whirm), currently oversees and approves all pull requests, so he is Tribler's assessor. [Egbert Bouman](https://github.com/egbertbouman) also takes on this role sometimes.
 
 #####Developers
+The developers of Tribler consist mainly of academia from the TU Delft, in fact, till now only one outside developer has been involved.
+
 Arno Bakker is the chief programmer of the project, according to the Tribler website. The full description of the Tribler team can be found [here](https://www.tribler.org/TriblerTeam/). 
 
 In addition to looking at the team page on the tribler website, we also found the big developers the system by looking at the GitHub repository's top contributors. The top contributor is [Niels Zeilemaker](https://github.com/NielsZeilemaker), a PhD Student studying Parallel and Distributed Systems at the TU Delft. Since he started contributing to the repository in March 2013, he has made 1112 commits.
@@ -174,7 +183,7 @@ The four high-level modules consists of the following folders:
  * Debug: Debugging tools for Tribler 
  * Test: Includes testing scripts for the project
 
-Due to the active development state that Tribler is in, combined with the detected lack of structure, there currently is no real restriction on modular dependencies. Currently every file can technically inherit from any other file. This allows for high flexibility and removes the need to worry heavily about the final structure of Tribler, but it might negatively influence maintenance and security.
+Due to the active development state that Tribler is in, less time goes into the actual structure of Tribler, which is also visible in the intra-modular restrictions. Currently every file can technically inherit from any other file. This allows for high flexibility and removes the need to worry heavily about the final structure of Tribler, but it might negatively influence maintenance and security.
 
 ##File Dependency Matrix
 Tribler's core functionality consists of many different files, each of which requires understanding of its functionality. To aid outside developers in contributing to the project, it would be beneficial to be able to provide them with an quick overview of how different files depend on each other. The Core package can be quite overwhelming at first, and some small changes can have a large impact, therefore an overview for that specific package (excluding nested projects) was created.
@@ -325,7 +334,7 @@ In order to get information about test coverage in Tribler, we looked at the Jen
 | Main | 68% | 69% |
 | Policies | 66% | 68% |
 
-From this we can see that the test coverage is decent for Tribler as a whole. Though Dispersy had a high cyclomatic complexity, it is still one of the most covered packages. This goes against one's expectations, but it could be explained by Dispersy being a stand-alone project (which is less actively being developed).
+From this we can see that the test coverage is decent for Tribler as a whole, but concerning the complexity and importance of what goes on behind the scenes (e.g. anonimity) this could still be considered insufficient. Though Dispersy had a high cyclomatic complexity, it is still one of the most covered packages. This goes against one's expectations, but it could be explained by Dispersy being a stand-alone project (which is less actively being developed).
 
 #####Bringing the Two Testing Metrics Together
 Sometimes there is a direct relation between the McCabe's number and the difficulty to obtain complete tests. This holds true for the Main package; the vwxGUI sub-package has a high cyclomatic complexity and it has a low test coverage. The Dispersy package on the other hand scores quite bad on the McCabe's number as well, but its test coverage is amongst the highest in the project.
