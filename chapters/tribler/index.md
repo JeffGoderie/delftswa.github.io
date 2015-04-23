@@ -7,6 +7,9 @@ chapter: true
 
 #Tribler: Aiming for Anonymity
 **[Jeffrey Goderie](https://github.com/JeffGoderie), [Alex Simes](https://github.com/alex9311), [Brynjolfur Georggson](https://github.com/binnimar), [Peter van Buul](https://github.com/PetervB)**
+
+![Tribler_logo](images/Tribler_logo.png)
+
 ####Abstract
 [Tribler](https://www.tribler.org/) is a BitTorrent client that aims at providing anonymity for both seeders and leechers. It provides users with the option to download or stream torrents without needing a browser to find the torrents.
 
