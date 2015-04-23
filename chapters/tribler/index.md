@@ -10,9 +10,9 @@ chapter: true
 ####Abstract
 [Tribler](https://www.tribler.org/) is a BitTorrent client that aims at providing anonymity for both seeders and leechers. It provides users with the option to download or stream torrents without needing a browser to find the torrents.
 
-Being an academic software project, Tribler shows many design flaws that could be problematic to Tribler's maintainability. Due to the lack of documentation it is quite hard to get into the project.
+Tribler shows many design flaws that could be problematic to its maintainability. Due to the lack of documentation it is quite hard to get involved in the project from the outside.
 
-In this analysis we tried providing a function overview of Tribler for future developers, as well as designing metrics that can help determine how maintainable Tribler is at any point in time.
+In this analysis we provide a functional overview of Tribler for future developers, as well as design metrics that can help determine how maintainable Tribler is at any point in time.
 
 ####Table of Contents
 - [Introduction to Tribler](#introduction-to-tribler)
@@ -23,7 +23,7 @@ In this analysis we tried providing a function overview of Tribler for future de
  - [Context View](#context-view)
  - [Legal Issues](#legal-issues)
  - [Security Perspective](#security-perspective)
-- [Architecture](#architecture)
+- [File Structure](#file-structure)
  - [Module Organization](#module-organization)
  - [File Dependency Matrix](#file-dependency-matrix)
  - [Common Processing and Standardization](#common-processing-and-standardization)
@@ -36,7 +36,7 @@ In this analysis we tried providing a function overview of Tribler for future de
 
 
 #Introduction to Tribler
-Tribler is a BitTorrent client that aims for anonymity of both seeders and leechers. Tribler provides the same functionality as most BitTorrent clients, combined with the added functionality to directly stream torrents when desired. What goes on behind the scenes to make it anonymous is inspired by and adapted from the Tor Networking Protocol. Tribler's database is filled with torrents found on the computers of all Tribler users.
+Tribler is a BitTorrent client that aims for anonymity of both seeders and leechers. Tribler provides the same functionality as most BitTorrent clients, combined with the added functionality to directly stream torrents when desired. What goes on behind the scenes to make it anonymous is inspired by and adapted from the Tor Networking Protocol. Tribler's torrent database, managed by Dispersy, is filled with torrents found on the computers of all Tribler users.
 
 Tribler also allows the users to use torrents found on the web. However, if the userun wants to stay anonymous, they should obtain the torrent file through Tribler's internal database system: Dispersy. Dispersy keeps track of torrent files that can be found across different Tribler users or communities (groups of users with similar interests). Having an internal database voids the need for browsers, which helps achieve the goal of anonymity.
 
@@ -145,15 +145,15 @@ Tribler faces many of the same issues as regular BitTorrent clients: The BitTorr
 
 However, Tribler does also face legal aspects with regards to full anonymity. Anyone who uses Tribler can be used as a potential exit node. Even when not downloading anything with Tribler, one could potentially be violating their ISP protocol. This is an intended element of Tribler, as it provides users with plausible deniability. Similar legal issues can be seen related to the Tor Network Protocol.
 
-# Architecture
+#File Structure
 As projects grow in size, they grow in complexity. This phenomena can lead people involved in the project to lose sight and overview of the project. A development view displays an overview of the structure of the project and its components as well as illustrates the important pieces which glue them together. A well maintained development view can help developers to maintain and extend the code base more efficiently.
 
 ## Module Organization
-To gain a better understanding of how a system works, and how it can be maintained without breaking dependencies, a Module Structure Model (MSM) can be created. An MSM consists of one or more modules in which elements of the source code are placed. These modules might have inter-modular dependencies, which are apparent through the MSM.
+To gain a better understanding of how a system works, and how it can be maintained without breaking dependencies, a Module Structure Model (MSM) can be created. An MSM consists of one or more modules in which elements of the source code are placed. These modules might have inter-modular dependencies, which are displayed in the MSM.
 
 Tribler's current structure advocates a modular division based upon functionality of modules. This leads to a 4-module division:
 
-- Core module, contains the main functionality for Tribler, including it's communication system and it's database (Dispersy)
+- Core module, contains the main functionality for Tribler, including its communication system and its database (Dispersy)
 
 - Visual/Usage module, takes care of the user related aspects of Tribler, like setting up the UI, and the end-user functionality provided by the Core module
 
@@ -161,7 +161,7 @@ Tribler's current structure advocates a modular division based upon functionalit
 
 - Test module, allows for elements to be tested in Jenkins, also contains files to do testing on, and to debug code.
 
-Each of these modules contain the packages that help provide the corresponding functionality. After adding these packages to the MSM, the inter-modular dependencies had to be investigated. While the intra-modular dependencies are generally equally important, these dependencies give no additional insight in how the different segments of functionality (modules) are dependent upon each other. A better insight in these intra-dependencies is given in the [File Dependency Matrix](#file-dependency-matrix) that we made for the Core package, which is the largest and most complex package in Tribler.
+Each of these modules contain the packages that help provide the corresponding functionality. After adding these packages to the MSM, the inter-modular dependencies had to be investigated. While the intra-modular dependencies are generally equally important, these dependencies give no additional insight in how the different segments of functionality (modules) are dependent upon each other. A better insight in these intra-modular dependencies (imports) is given in the [File Dependency Matrix](#file-dependency-matrix) that we made for the Core package, which is the largest and one of the more complex packages in Tribler.
 
 Taking the gained knowledge of the system and putting it into a usable model resulted in the following Module Structure Model:
 
@@ -183,7 +183,7 @@ The four high-level modules consists of the following folders:
  * Debug: Debugging tools for Tribler 
  * Test: Includes testing scripts for the project
 
-Due to the active development state that Tribler is in, less time goes into the actual structure of Tribler, which is also visible in the intra-modular restrictions. Currently every file can technically inherit from any other file. This allows for high flexibility and removes the need to worry heavily about the final structure of Tribler, but it might negatively influence maintenance and security.
+As can be seen in the Module Structure Model, there are some circular dependency violations (bi-directional dependencies), which is considered bad practice in software development. However, due to the prototype development stage that Tribler is in, less time and effort goes into the structure of Tribler, whereas more time seems to be spend on implementing new functions. This disregard for structure allows for high flexibility while developing, but it might negatively influence maintainability and security.
 
 ##File Dependency Matrix
 Tribler's core functionality consists of many different files, each of which requires understanding of its functionality. To aid outside developers in contributing to the project, it would be beneficial to be able to provide them with an quick overview of how different files depend on each other. The Core package can be quite overwhelming at first, and some small changes can have a large impact, therefore an overview for that specific package (excluding nested projects) was created.
@@ -203,7 +203,7 @@ This consistency can be found in naming, commenting, and file-content convention
 These inconsistencies occur due to the lack of development guidelines. The [development pointers](https://github.com/Tribler/tribler/wiki/Tribler-Development-Pointers) for new developers are outdated, and provide no guidelines on design. This adds to the belief that Tribler's management currently values functionality over maintainability and consistency. The lack of guidelines could, in the long run, have negative effects on maintainability and attracting new developers.
 
 ###Standardization of Testing
-Rozanski and Woods state that standardization of testing, including technologies and conventions, helps in ensuring a consistent approach to testing and speeds up the testing process. In Tribler, there is no definite standarization, but any new feature has to come with its corresponding tests, and these have to pass for the new attribute to be accepted.
+Rozanski and Woods state that standardization of testing, including technologies and conventions, helps in ensuring a consistent approach to testing and speeds up the testing process. In Tribler, there is no definite standarization, but any new feature has to come with its corresponding tests, and these have to pass for the new attribute in order to be accepted.
 
 #Maintainability
 Now that we have provided a better insight into the structure of Tribler's code base, we can move on to software metrics. We will define metrics to determine to the status of Tribler's maintainability, and how it can be improved. 
