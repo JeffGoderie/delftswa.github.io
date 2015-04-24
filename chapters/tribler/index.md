@@ -6,9 +6,9 @@ chapter: true
 ---
 
 #Tribler: Aiming for Anonymity
-**[Jeffrey Goderie](https://github.com/JeffGoderie), [Alex Simes](https://github.com/alex9311), [Brynjolfur Georggson](https://github.com/binnimar), [Peter van Buul](https://github.com/PetervB)**
+**[Jeffrey Goderie](https://github.com/JeffGoderie), [Alex Simes](https://github.com/alex9311), [Brynjolfur Georgsson](https://github.com/binnimar), [Peter van Buul](https://github.com/PetervB)**
 
-![Tribler_logo](images/Tribler_logo.png)
+![Tribler_logo](images/Tribler_logo_tor.jpg)
 
 ####Abstract
 [Tribler](https://www.tribler.org/) is a BitTorrent client that aims at providing anonymity for both seeders and leechers. It provides users with the option to download or stream torrents without needing a browser to find the torrents.
@@ -35,6 +35,7 @@ In this analysis we provide a functional overview of Tribler for future develope
   - [How complex is Tribler's code base?](#how-complex-is-triblers-code-base)
   - [What is the current state of testing in Tribler?](#what-is-the-current-state-of-testing-in-tribler)
 - [Inside the architect's mind](#inside-the-architects-mind)
+- [Concluding statement](#concluding-statement)
 - [Sources](#sources)
 
 
@@ -189,7 +190,7 @@ The four high-level modules consists of the following folders:
 As can be seen in the Module Structure Model, there are some circular dependency violations (bi-directional dependencies), which is considered bad practice in software development. However, due to the prototype development stage that Tribler is in, less time and effort goes into the structure of Tribler, whereas more time seems to be spend on implementing new functions. This disregard for structure allows for high flexibility while developing, but it might negatively influence maintainability and security.
 
 ##File Dependency Matrix
-Tribler's core functionality consists of many different files, each of which requires understanding of its functionality. To aid outside developers in contributing to the project, it would be beneficial to be able to provide them with an quick overview of how different files depend on each other. The Core package can be quite overwhelming at first, and some small changes can have a large impact, therefore an overview for that specific package (excluding nested projects) was created.
+Tribler's core functionality consists of many different files, each of which requires understanding of its functionality. To aid outside developers in contributing to the project, it would be beneficial to be able to provide them with an quick overview of what files are imported by other files in the Core package. The Core package can be quite overwhelming at first, and some small changes can have a large impact, therefore an overview for that specific package (excluding nested projects) was created.
 
 ![File Dependency Matrix](images/FileDependencyMatrix.png)
 
@@ -221,21 +222,11 @@ In the process of seeing how maintainable Tribler is, we will consider each of T
 For this question, we look at how many comments are in the python files of Tribler's source and at how much documentation there is explaining the purpose and structure of each package.
 
 #####Comment Density
-We define "comment density" as the ratio between comment lines and source code lines. Below, we display both the average and median percentages of code that is comments separated by package. 
+We define "comment density" as the ratio between comment lines and source code lines. Below, we display both the comment density distribution of the 4 biggest packages: Main, Dispersy, Core and Community.
 
-| Package | Median comment density | Average comment density |
-|-------------|---------|---------|
-| Category    | **4%**  |  **11%**|
-| Community   | **5%**  |  **9%** | 
-| Core        | **23%** |  **22%**|
-| Dispersy    | **16%** | **24%** | 
-| Main        | **6%**  | **5%**  |
-| Policies    | **23%** | **19%** | 
-| Test        | **5%**  |  **8%** | 
-| Utilities   | **21%** | **16%** |
-| All Packages| **11%** | **14%** |
+![Comments](images/Comments.png)
 
-Overall, we can see that there are a few packages that stand out as being poorly commented. Name, the Main, Community and Test packages have the three lowest median (and average) comment densities. Later on, we will see if this combines with any other metrics to make a particularly hard to maintain package.
+Overall, we can see that for all 4 packages the majority of the files have a low comment density (<**30%**). The displayed comment densities are inflated by the presence of comment blocks providing licensing information, so the useful comment density will be even lower. The Main package has the most files with nearly no comments, suggesting that this package needs some work.
 
 #####Package Level Documentation
 To determine the extent of Tribler's documentation on package-level, we went over all the packages and looked for files that explained what the package is supposed to do, and what it's key elements are. We believe this to be an important element to maintainability as it could help point developers in the right direction when adding/changing functionality.
@@ -249,23 +240,13 @@ While the second metric was merely useful in identifying what is missing in Trib
 To answer this question, we considered two metrics. First we looked into the number of files and lines of code in each package of the project. Then we looked at the maintainability score of each package using a great code-analysis tool we found. 
 
 #####Number of Files and Number of Lines of Code
-The Tribler project contains 477 Python files and 107,915 lines of Python code. Note that these numbers will vary slightly day to day due to the frequency of commits. Below, we have a table showing these metrics separated by package.
+The Tribler project contains 477 Python files and 107,915 lines of Python code. Note that these numbers will vary slightly day to day due to the frequency of commits. We investigated how the size of the files was distributed in the Main, Community, Core and Dispersy packages. The results are displayed below.
 
-| Package 	| Number of Python Files 	| Lines of Python Code 	|
-|-----------	|-----				|------			|
-| Category 	| 4 				| 392 			|
-| Community 	| 61  				| 11,519 		|
-| Core 		| 223  				| 38,389 		|
-| Dispersy	| 94 				| 22,648 		|
-| Main 		| 5				| 29,642 		|
-| Policies 	| 3				| 607 			|
-| Test 		| 29 				| 4,295 		|
-| Utilities 	| 4 				| 423 			|
-| All packages 	| 477 				| 107,915 		|
+![SLOC](images/SLOC.png)
 
-The reason we consider the file count on the package level is that it will allow us to get an idea of what the more complex packages are in the system. We can see here that the Core package is definitely an outlier in this dataset. This could be an indicator that it is one of the more complex packages of our set in Tribler.
+We look into this distribution to get insight in what packages have extremely large files. Large files are often an indication that the file takes care of too many things, or that is it complex. Other than these problems, large files can be very daunting to new developers, and therefore it would make sense to have extra documentation and comments for such files. As with the comment density, the Main package seems to be a problematic package, having the most files with over 1000 lines of source code.
 
-While 115k lines of code is not very large for a source code project, we need to consider the context. There are not very many active developers on this project, compared to software companies' development teams. As with the file count, we can use this metric to find the packages that are outliers in the system. The Core, Dispersy, and Main package have considerably more lines than the rest of the packages.
+While 110K lines of code is not very large for a source code project, we need to consider the context. There are not very many active developers on this project, compared to software companies' development teams, and the lack of a communicator makes it hard to join in, even though the project's scale is not very large.
 
 #####Radon's Maintainability Metric
 Measuring complexity is known to be a very difficult task in software engineering. Above, we tried to use simple metrics to find which packages in Tribler are the most complex and, thus, the most difficult to maintain. Following the thought that complex systems are difficult to maintain, we argue that, in our context of complexity, systems deemed difficult to maintain are also complex. 
@@ -286,24 +267,8 @@ In the figure below, we present all of the files that have received a B grade or
 
 Only 20 files have rank C, and 4 files have rank B. Comparing this to the total of 477 python files in the project shows that most files are not complex. We can see that a lot of the complex files are found inside the Main package, specifically the vwxGUI sub-package. The Dispersy, Core, and Community packages also have some particularly hard to maintain (complex) files.
 
-#####Bringing the Three Complexity Metrics Together
-We have looked at two different metrics in an effort to describe how complex Tribler is. According to the Radon Maintainability index, Main is the most complex package. If we look at Main in the other two metrics, we see that it has the second most lines of code yet has an average number of files. This might suggest that more lines per file can quickly make a package more complex. To investigate this further, we created a table that shows the average number of lines per file in each package
-
-| Package | Average Lines per Python File | Median Lines per Python File|
-|-----------|-----|----|
-| Category | 98 | 82 |
-| Community |189  | 82 |
-| Core |172  | 92 |
-| Dispersy| 240 | 93 |
-| Main | 502 | 179 |
-| Policies |202| 189 |
-| Test | 148 | 94 |
-| Utilities | 106 | 94 |
-| all packages | 226 |105 |
-
-If we look at this chart with the idea that lines of code per file makes a system complex, the Main package would be most complex. This does agree with the findings of the Radon Maintainability index tool, which found the most hard-to-maintain files in the Main package. 
-
-Other red flags raised by the first two metrics are the Core, Dispersy, and Community packages. All of these packages have relatively large amounts of files and lines of code. This insight into complexity can be combined with the results on documentation to determine where more documentation is needed.
+#####Bringing the Two Complexity Metrics Together
+We have looked at two different metrics in an effort to describe how complex Tribler is. According to the Radon Maintainability index, Main is the most complex package. The same was found when inspecting the source code distribution, with Main having the most files of significant size (1000+ SLOC). 
 
 ###What is the current state of testing in Tribler?
 #####Cyclomatic complexity of Tribler's code blocks
@@ -343,7 +308,7 @@ From this we can see that the test coverage is decent for Tribler as a whole, bu
 Sometimes there is a direct relation between the McCabe's number and the difficulty to obtain complete tests. This holds true for the Main package; the vwxGUI sub-package has a high cyclomatic complexity and it has a low test coverage. The Dispersy package on the other hand scores quite bad on the McCabe's number as well, but its test coverage is amongst the highest in the project.
 
 ###Bringing findings from all questions together
-Now we can combine what we learned and draw conclusions on the maintainability. Based on the outcome of the 3 questions, Main, Dispersy and Core need to be worked on to make them more maintainable. While the functionality is fixed, and therefore the McCabe's number is fixed as well, the documentation on these packages needs a lot of work to make them more easily understandable. All in all most of Tribler's source code is not overly complex when addressed separately, however, when getting into the project for the first time, the lack of documentation is quite a hurdle.
+Now we can combine what we learned and draw conclusions on the maintainability. Based on the outcome of the 3 questions we can conclude that the Main package needs the most attention. It seems to be one of the more complex packages, yet it has very low comment density. The Main package stands out in a particular negative manner, however, the Dispersy, Core and Community packages would benefit from better comment and documentation coverage. All in all most of Tribler's source code is not overly complex when addressed separately, however, when getting into the project for the first time, the lack of documentation is quite a hurdle.
 
 #Inside the architect's mind
 To verify Tribler's current architecture with what we found, we consulted Johan Pouwelse. When confronted about the functionality over maintainability he replied:
@@ -351,6 +316,11 @@ To verify Tribler's current architecture with what we found, we consulted Johan 
 > We are currently focusing on meeting the Minimal Viable Product (MVP). If this MVP has been reached, we will focus on making Tribler more maintainable. For now we try to create a Darknet, and beat scalability issues.
 
 This verified the conclusion we had drawn from the software's architecture.
+
+#Concluding statement
+Tribler is an academic software project that is actively being developed. The development team is currently more interested in adding functionality rather than ensuring maintainability. It would be beneficial for the project to attract outside developers, but its lack of structure and documentation makes it hard for outsiders to get involved with the project. Several packages stand out in a negative sense, and would benefit from either having a communicator or having documentation to explain their purposes and functionality. We brought our findings to the attention of the project leader, who was aware of the lack of documentation.
+
+**So to attract outside developers, make sure that your project is accessible, both in file structure, documentation and organization!**
 
 #Sources
 
