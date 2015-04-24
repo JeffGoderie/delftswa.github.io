@@ -6,7 +6,7 @@ chapter: true
 ---
 
 #Tribler: Aiming for Anonymity
-**[Jeffrey Goderie](https://github.com/JeffGoderie), [Alex Simes](https://github.com/alex9311), [Brynjolfur Georgsson](https://github.com/binnimar), [Peter van Buul](https://github.com/PeteirvB)**<br/>
+**[Jeffrey Goderie](https://github.com/JeffGoderie), [Alex Simes](https://github.com/alex9311), [Brynjolfur Georgsson](https://github.com/binnimar), [Peter van Buul](https://github.com/PetervB)**<br/>
 *Delft University of Technology*
 
 ![Tribler_logo](images/Tribler_logo_tor.jpg)
