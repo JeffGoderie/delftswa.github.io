@@ -327,7 +327,7 @@ Tribler is an academic software project that is actively being developed. The de
 
 ###Websites:
 
-* [tribler.org](tribler.org)
+* [https://www.tribler.org/](https://www.tribler.org/)
 * [http://en.wikipedia.org/wiki/Tribler](http://en.wikipedia.org/wiki/Tribler)
 * [https://github.com/Tribler/tribler](https://github.com/Tribler/tribler)
 * [https://github.com/Tribler/tribler/wiki](https://github.com/Tribler/tribler/wiki)
